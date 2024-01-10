@@ -1,3 +1,5 @@
+<form action="{%url 'polls/new_question'%}" method ="post">
+{%csrf_token%}
 {% if latest_question_list %}
     <ul>
     {% for question in latest_question_list %}
@@ -7,3 +9,10 @@
 {% else %}
     <p>No polls are available.</p>
 {% endif %}
+
+<fieldset>
+    <input type="text" name="new_question" id="new_question" placeholder="Enter your new question" value="">
+</fieldset>
+
+<input type ="submit" value="Submit new question">
+</form>

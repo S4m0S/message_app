@@ -1,0 +1,17 @@
+<form action="{%url 'polls:new_choice' question.id%}" method = "post">
+
+    {% csrf_token %}
+    <fieldset>
+        <legend><h1>{{question.question_text}}</h1></legend>
+        {%if error_message%}<p><strong>{{error_message}}</strong></p>{%endif%}
+        {%for choice in question.choice_set.all%}
+            <ul>
+                <li>{{choice.choice_text}}</li>
+            </ul>
+        {%endfor%}
+        <input type="text" name = "new_choice" id = "new_choice" value="" placeholder="Your new choice for this question">
+        </fieldset>
+        <input type="submit" value="Submit new choice">
+</form>
+
+<head>

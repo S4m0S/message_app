@@ -2,6 +2,8 @@ from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from .models import Question, Choice
 from django.urls import reverse
+from django.utils import timezone
+
 
 # Create your views here.
 
@@ -25,6 +27,24 @@ def details(request, question_id):
     return render(request,"polls/detail.html",{"question":question})
 
 
+def new_choice(request, question_id):
+    question = get_object_or_404(Question,pk=question_id)
+    new_choice_text = request.POST["new_choice"]
+    if(new_choice_text):
+        c = Choice.objects.create(choice_text = new_choice_text,question=question)
+        c.save()
+        return HttpResponseRedirect(f"../../polls/{question.id}")
+    else:
+        return render(
+            request,
+            "polls/new_choice.html",
+            {
+                "question":question,
+                "error_message" : "You did not enter a new choice"
+            }
+            )
+
+
 def vote(request, question_id):
     question = get_object_or_404(Question,pk=question_id)
     try:
@@ -45,4 +65,25 @@ def vote(request, question_id):
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
     
 
-        
+def choices(request, question_id):
+    question = get_object_or_404(Question,pk=question_id)
+    return render(
+                request,
+                "polls/new_choice.html",
+                {
+                    "question":question
+                })
+
+
+def new_question(request):
+    try:
+        question = Question.objects.create(question_text = request.POST["new_question"],pub_date=timezone.now())
+        question.save()
+        return HttpResponseRedirect(reverse("polls:",args=(question.id,)))
+    except:
+        latest_question_list = Question.objects.order_by("-pub_date")[:5]
+        return render(request,
+                      "polls/index.html",
+                      {
+                          "latest_question_list":latest_question_list
+                      })
